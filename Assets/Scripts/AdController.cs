@@ -1,22 +1,39 @@
+using GamePush;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using YG;
 
 public class AdController : MonoBehaviour
 {
     [SerializeField] private UpgradeSystem upgradeSystem;
-    private void OnEnable() => YandexGame.RewardVideoEvent += Rewarded;
-    private void OnDisable() => YandexGame.RewardVideoEvent -= Rewarded;
+    [SerializeField] private VolumController volumController;
 
-    private void Rewarded(int id)
+    // Показать rewarded video
+    public void ShowRewarded() => GP_Ads.ShowRewarded("COINS", OnRewardedReward, OnRewardedStart, OnRewardedClose);
+
+    // Начался показ
+    private void OnRewardedStart() => Debug.Log("ON REWARDED: START");
+    // Получена награда
+    private void OnRewardedReward(string value)
     {
-        AddMoney(0);
+        if (value == "COINS")
+            AddMoney();
+
+        if (value == "GEMS")
+            Debug.Log("ON REWARDED: +5 GEMS");
     }
 
-    private void AddMoney(int id)
+    // Закончился показ
+    private void OnRewardedClose(bool success) => Debug.Log("ON REWARDED: CLOSE");
+
+    //private void Rewarded(int id)
+    //{
+    //    AddMoney(0);
+    //}
+
+    private void AddMoney()
     {
         upgradeSystem.AddMoney(Math.Round(upgradeSystem.MoneyCount / 2));
     }
