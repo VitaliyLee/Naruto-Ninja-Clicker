@@ -23,7 +23,6 @@ public class Saver : MonoBehaviour
 
     private void Awake()
     {
-        GP_Storage.SetStorage(SaveStorageType.platform);
         GetLoad();
     }
 
@@ -36,6 +35,7 @@ public class Saver : MonoBehaviour
 
     public void Save()
     {
+        GP_Storage.SetStorage(SaveStorageType.platform);
         GP_Storage.Set("allMoney", upgradeSystem.MoneyCount);
         //GP_Storage.Set("moneyInSecond", bossDamage.MoneyPerSecond);
         //GP_Storage.Set("moneyClick", bossDamage.MoneyClick);
@@ -70,6 +70,7 @@ public class Saver : MonoBehaviour
 
     public void GetLoad(/*StorageField storage*/)
     {
+        GP_Storage.SetStorage(SaveStorageType.platform);
         Debug.Log("GetLoad colling");
         GP_Storage.Get("allMoney", value => { upgradeSystem.AddMoney(value is double doubleValue ? doubleValue : 0); });
         //upgradeSystem.AddMoney(YandexGame.savesData.allMoney);
