@@ -1,4 +1,5 @@
 using GamePush;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,104 +22,111 @@ public class Saver : MonoBehaviour
     //private void OnEnable() => GP_Storage.OnGetValue += GetLoad;
     //private void OnDisable() => GP_Storage.OnGetValue -= GetLoad;
 
-    private void Awake()
+    private void OnEnable()
     {
-        GetLoad();
+        GP_Init.OnReady += GetLoad;
+        GP_Init.OnReady += InvokeSaver;
+    }
+
+    private void OnDisable()
+    {
+        GP_Init.OnReady -= GetLoad;
+        GP_Init.OnReady -= InvokeSaver;
     }
 
     private void Start()
     {
-        InvokeRepeating("Save", 0, 5);
+        //InvokeRepeating("Save", 0, 5);
+        //Save();
+        //GetLoad();
+    }
+
+    private void OnApplicationQuit()
+    {
+        //Save();
     }
 
     //public List<ShopSlotStats> shopStats;
 
-    public void Save()
+    //Используемые ключи и их значение
+    //allMoney - колличество накликанных денег
+    //moneyInSecond - колличество денег (авто кликов) в секунду
+    //moneyClick - денег за клик
+    //bossIndex - индекс босса (какой босс должен появиться)
+    //level - текущий уровень по счету (к боссу не завязать, тк реализация механики боссов не позволяет, а менять лень)
+    //levelProgress - прогресс шкалы босса (шкалы урона босса)
+    //bgCostData - список цен на задний фон в магазине
+
+    private void InvokeSaver()
     {
-        //GP_Storage.SetStorage(SaveStorageType.platform);
-        //GP_Storage.Set("allMoney", upgradeSystem.MoneyCount);
-        //GP_Storage.Set("moneyInSecond", bossDamage.MoneyPerSecond);
-        //GP_Storage.Set("moneyClick", bossDamage.MoneyClick);
-        //GP_Storage.Set("bossIndex", createBoss.bossIndex);
-        //GP_Storage.Set("level", createBoss.level);
-        //GP_Storage.Set("levelProgress", healthSlider.value);
-        //GP_Storage.Set("shopSlot", upgradeSystem.shopSlotRemember);
-
-        //for (int i = 0; i < upgradeSystem.backgroundList.Count; i++)
-        //    GP_Storage.Set($"backCost{i}", upgradeSystem.backgroundList[i].backgroundCost);
-
-        //YandexGame.savesData.allMoney = upgradeSystem.MoneyCount;
-
-        //YandexGame.savesData.moneyInSecond = bossDamage.MoneyPerSecond;
-        //YandexGame.savesData.moneyClick = bossDamage.MoneyClick;
-
-        //YandexGame.savesData.bossIndex = createBoss.bossIndex;
-        //YandexGame.savesData.level = createBoss.level;
-        //YandexGame.savesData.levelProgress = healthSlider.value;
-
-        //YandexGame.savesData.shopSlot = upgradeSystem.shopSlotRemember;
-
-        //for (int i = 0; i < upgradeSystem.backgroundList.Count; i++)
-        //    YandexGame.savesData.backCost[i] = upgradeSystem.backgroundList[i].backgroundCost;
-        
-        //YandexGame.SaveProgress();
-
-        Debug.Log("Game is saved!");
+        InvokeRepeating("Save", 0, 5);
     }
 
-    //public void Load() => YandexGame.LoadProgress();
-
-    public void GetLoad(/*StorageField storage*/)
+    //Сохранение данных
+    public void Save()
     {
-        //GP_Storage.SetStorage(SaveStorageType.platform);
-        Debug.Log("GetLoad colling");
-        //GP_Storage.Get("allMoney", value => { upgradeSystem.AddMoney(value is double doubleValue ? doubleValue : 0); });
-        //upgradeSystem.AddMoney(YandexGame.savesData.allMoney);
+        GP_Player.Set("allMoney", (float)upgradeSystem.MoneyCount);
+        GP_Player.Set("moneyInSecond", bossDamage.MoneyPerSecond);
+        GP_Player.Set("moneyClick", bossDamage.MoneyClick);
 
-        //GP_Storage.Get("moneyInSecond", value => { bossDamage.AddDmgPerSec(value is float floatValue ? floatValue : 0); });
-        ////bossDamage.AddDmgPerSec(YandexGame.savesData.moneyInSecond);
+        GP_Player.Set("bossIndex", createBoss.bossIndex);
+        GP_Player.Set("level", createBoss.level);
+        GP_Player.Set("levelProgress", healthSlider.value);
 
-        //float dmg = 0;
-        //GP_Storage.Get("moneyClick", value => { dmg = value is float floatValue ? floatValue : 0; });
+        string bgCostSaveData = "";
+        for (int i = 0; i < upgradeSystem.backgroundList.Count; i++)
+        {
+            if (i > 0)
+                bgCostSaveData += $",{upgradeSystem.backgroundList[i].backgroundCost}";
 
-        //if (dmg > 1)
-        //    bossDamage.AddDmg(dmg - 1);
+            bgCostSaveData += $"{upgradeSystem.backgroundList[i].backgroundCost}";
+        }
 
-        //else
-        //    bossDamage.AddDmg(dmg);
+        GP_Player.Set("oneBgCost", upgradeSystem.backgroundList[0].backgroundCost);
+        GP_Player.Set("twoBgCost", upgradeSystem.backgroundList[1].backgroundCost);
+        GP_Player.Set("threeBgCost", upgradeSystem.backgroundList[2].backgroundCost);
+        GP_Player.Set("fourBgCost", upgradeSystem.backgroundList[3].backgroundCost);
+        GP_Player.Set("fiveBgCost", upgradeSystem.backgroundList[4].backgroundCost);
+        GP_Player.Set("sixBgCost", upgradeSystem.backgroundList[5].backgroundCost);
+        GP_Player.Set("sevenBgCost", upgradeSystem.backgroundList[6].backgroundCost);
+        GP_Player.Set("eightBgCost", upgradeSystem.backgroundList[7].backgroundCost);
 
-        //GP_Storage.Get("bossIndex", value => { createBoss.bossIndex = value is int intValue ? intValue : 0; });
-        ////createBoss.bossIndex = YandexGame.savesData.bossIndex;
+        GP_Player.Sync(storage: SyncStorageType.preffered);
+        //GP_Storage.Set("shopSlot", upgradeSystem.shopSlotRemember);
 
-        //GP_Storage.Get("level", value => { createBoss.level = value is int intValue ? intValue : 0; });
-        ////createBoss.level = YandexGame.savesData.level;
+        //Debug.Log(bgCostSaveData);
+    }
 
-        //GP_Storage.Get("levelProgress", value => { createBoss.levelProgress = value is float floatValue ? floatValue : 0; });
-        ////createBoss.levelProgress = YandexGame.savesData.levelProgress;
+    //Загрузка данных
+    private void GetLoad()
+    {
+        upgradeSystem.AddMoney(GP_Player.GetFloat("allMoney"));
+        bossDamage.AddDmgPerSec(GP_Player.GetFloat("moneyInSecond"));
 
-        //ShopSlotStats shopSlot = new ShopSlotStats();
-        //GP_Storage.Get("shopSlot", value => { shopSlot = value is ShopSlotStats ShopSlotStatsValue ? ShopSlotStatsValue : null; });
+        float dmg = GP_Player.GetFloat("moneyClick");
 
-        //if (shopSlot != null)
-        //    upgradeSystem.ByBackground(shopSlot);
+        if (dmg > 1)
+            bossDamage.AddDmg(dmg - 1);
+        else
+            bossDamage.AddDmg(dmg);
 
-        //for (int i = 0; i < upgradeSystem.backgroundList.Count; i++)
-        //    GP_Storage.Get($"backCost{i}", value => { upgradeSystem.backgroundList[i].backgroundCost = value is int intValue ? intValue : 0; });
-        //    //upgradeSystem.backgroundList[i].backgroundCost = YandexGame.savesData.backCost[i];
+        createBoss.SetLevelData(GP_Player.GetInt("level"), GP_Player.GetFloat("levelProgress"), GP_Player.GetInt("bossIndex"));
+        //createBoss.bossIndex = GP_Player.GetInt("bossIndex");
+        //createBoss.level = GP_Player.GetInt("level");
+        //createBoss.levelProgress = GP_Player.GetFloat("levelProgress");
 
-        Debug.Log("Game is loaded!");
+        List<int> bgCosts = new List<int>
+        {
+            GP_Player.GetInt("oneBgCost"),
+            GP_Player.GetInt("twoBgCost"),
+            GP_Player.GetInt("threeBgCost"),
+            GP_Player.GetInt("fourBgCost"),
+            GP_Player.GetInt("fiveBgCost"),
+            GP_Player.GetInt("sixBgCost"),
+            GP_Player.GetInt("sevenBgCost"),
+            GP_Player.GetInt("eightBgCost")
+        };
 
-        //integerText.text = string.Empty;
-        //stringifyText.text = string.Empty;
-        //
-        //integerText.placeholder.GetComponent<Text>().text = YandexGame.savesData.money.ToString();
-        //stringifyText.placeholder.GetComponent<Text>().text = YandexGame.savesData.newPlayerName;
-        //
-        //for (int i = 0; i < booleanArrayToggle.Length; i++)
-        //    booleanArrayToggle[i].isOn = YandexGame.savesData.openLevels[i];
-        //
-        //systemSavesText.text = $"Language - {YandexGame.savesData.language}\n" +
-        //$"First Session - {YandexGame.savesData.isFirstSession}\n" +
-        //$"Prompt Done - {YandexGame.savesData.promptDone}\n";
+        upgradeSystem.SetBgCost(bgCosts);
     }
 }

@@ -9,12 +9,21 @@ public class AdController : MonoBehaviour
 {
     [SerializeField] private UpgradeSystem upgradeSystem;
     [SerializeField] private VolumController volumController;
+    [SerializeField] private AudioSource mainAudioSource;
+
+    private bool volumeMute = false;
 
     // Показать rewarded video
     public void ShowRewarded() => GP_Ads.ShowRewarded("COINS", OnRewardedReward, OnRewardedStart, OnRewardedClose);
 
     // Начался показ
-    private void OnRewardedStart() => Debug.Log("ON REWARDED: START");
+    private void OnRewardedStart()
+    {
+        if(mainAudioSource.mute)
+            volumeMute = true;
+        else
+            volumController.VolumeOnOff();
+    }
     // Получена награда
     private void OnRewardedReward(string value)
     {
@@ -26,7 +35,11 @@ public class AdController : MonoBehaviour
     }
 
     // Закончился показ
-    private void OnRewardedClose(bool success) => Debug.Log("ON REWARDED: CLOSE");
+    private void OnRewardedClose(bool success)
+    {
+        if (!volumeMute)
+            volumController.VolumeOnOff();
+    }
 
     //private void Rewarded(int id)
     //{

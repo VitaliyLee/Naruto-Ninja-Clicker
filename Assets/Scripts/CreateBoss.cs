@@ -18,11 +18,6 @@ public class CreateBoss : MonoBehaviour
     public float levelProgress = 0;
     public int bossIndex = 0;
 
-    private void Start()
-    {
-        NewBoss();
-    }
-
     private void Update()
     {
         if (healthSlider.value >= healthSlider.maxValue)
@@ -46,5 +41,14 @@ public class CreateBoss : MonoBehaviour
         healthSlider.value = levelProgress;
 
         levelText.text = $"Уровень {level + 1}";
+    }
+
+    public void SetLevelData(int Level, float LevelProgress, int BossIndex)
+    {
+        level += Level;
+        levelProgress += LevelProgress;
+        bossIndex += BossIndex;
+
+        NewBoss();
     }
 }

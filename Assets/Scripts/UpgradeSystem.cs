@@ -25,12 +25,6 @@ public class UpgradeSystem : MonoBehaviour
     public ShopSlotStats shopSlotRemember;
     public double MoneyCount => moneyCount;
 
-    private void Start()
-    {
-        SetMoney();
-        CheckObjectAccess();
-    }
-
     public void ByBackground(ShopSlotStats shopSlotStats)
     {
         if (DeductMoney(shopSlotStats.backgroundCost))
@@ -61,6 +55,16 @@ public class UpgradeSystem : MonoBehaviour
     {
         moneyCount += money;
         SetMoney();
+
+        CheckObjectAccess();
+    }
+
+    public void SetBgCost(List<int> BgCosts)
+    {
+        for (int i = 0; i < backgroundList.Count; i++)
+        {
+            backgroundList[i].backgroundCost = BgCosts[i];
+        }
 
         CheckObjectAccess();
     }
